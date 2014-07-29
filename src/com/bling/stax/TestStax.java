@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.EventFilter;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
@@ -11,8 +14,17 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.events.XMLEvent;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+import javax.xml.xpath.XPathFunction;
 
 import org.junit.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 public class TestStax {
 	/**
@@ -195,6 +207,48 @@ public class TestStax {
 			}
 			System.out.println(num);
 		} catch (XMLStreamException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (is != null)
+				try {
+					is.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+	}
+	
+	@Test
+	public void test06() {
+		InputStream is = null;
+		try {
+			is = TestStax.class.getClassLoader().getResourceAsStream("books.xml");
+			//创建文档处理对象
+			DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+			//通过DocumentBuilder创建doc的文档对象
+			Document doc = db.parse(is);
+			//创建Xpath
+			XPath xpath = XPathFactory.newInstance().newXPath();
+			//第一个参数为xpath,第二个参数就是文档
+			NodeList list = (NodeList)xpath.evaluate("//book[@category='WEB']", doc, XPathConstants.NODESET);
+			for(int i=0;i<list.getLength();i++){
+				Element e = (Element)list.item(i);
+				System.out.println(e.getElementsByTagName("title").item(0).getTextContent());
+						
+			}
+			
+		} catch (ParserConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SAXException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (XPathExpressionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
